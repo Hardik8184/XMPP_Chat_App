@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#e1e1e1"
+    android:orientation="vertical">
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_chatList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/form"
+        android:layout_margin="4dp"
+        android:scrollbars="none" />
+
+    <LinearLayout
+        android:id="@+id/form"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="#D1D1D1"
+        android:orientation="horizontal"
+        android:paddingBottom="2dp">
+
+
+        <EditText
+            android:id="@+id/et_message"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="2dp"
+            android:layout_marginStart="2dp"
+            android:layout_weight="1"
+            android:elevation="4dp"
+            android:gravity="center|start"
+            android:hint="Enter Message"
+            android:imeActionId="@+id/send1"
+            android:imeActionLabel="Send"
+            android:imeOptions="actionSend"
+            android:lines="4"
+            android:minLines="1"
+            android:padding="12dp"
+            android:scrollbars="vertical"
+            android:textColor="@android:color/black"
+            android:textSize="17sp" />
+
+        <ImageView
+            android:id="@+id/ibtn_sendMessage"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:elevation="4dp"
+            android:padding="2dp"
+            android:src="@drawable/ic_send"
+            android:visibility="visible" />
+    </LinearLayout>
+</RelativeLayout>
