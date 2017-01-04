@@ -3,11 +3,14 @@ package com.oozee.use1.services;
 import android.app.AlarmManager;
 import android.app.IntentService;
 import android.app.PendingIntent;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
+import android.os.IBinder;
 import android.os.Looper;
+import android.support.annotation.Nullable;
 
 import com.oozee.use1.Common;
 import com.oozee.use1.xmpp.BackgroundXMPP;
@@ -17,7 +20,7 @@ import com.oozee.use1.xmpp.BackgroundXMPP;
  * Created by peacock on 8/10/16.
  */
 
-public class BackgroundXMPPConnection extends IntentService {
+public class BackgroundXMPPConnection extends Service {
 
     private BackgroundXMPP backgroundXMPP;
 
@@ -29,15 +32,11 @@ public class BackgroundXMPPConnection extends IntentService {
 
     private SharedPreferences preferences;
 
-    public BackgroundXMPPConnection() {
-        super("BackgroundXMPPConnection");
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
     }
-
-//    @Nullable
-//    @Override
-//    public IBinder onBind(Intent intent) {
-//        return null;
-//    }
 
     @Override
     public void onCreate() {
@@ -56,15 +55,11 @@ public class BackgroundXMPPConnection extends IntentService {
 
                 if (Common.getConnectivityStatusString(BackgroundXMPPConnection.this)) {
 
-//                    if (preferences.getString("selectUser", "1").equals("1")) {
-                    backgroundXMPP = new BackgroundXMPP(BackgroundXMPPConnection.this,
-                            Common.DOMAIN, Common.CHAT_USERNAME_1, Common.PASSWORD_1, "1");
-//                    } else {
-//                        backgroundXMPP = new BackgroundXMPP(BackgroundXMPPConnection.this,
-//                                Common.DOMAIN, Common.CHAT_USERNAME_2, Common.PASSWORD_2, "2");
+//                    if (!Common.isMyServiceRunning(BackgroundXMPPConnection.this, BackgroundXMPPConnection.class)) {
+//                    backgroundXMPP = new BackgroundXMPP(BackgroundXMPPConnection.this,
+//                            Common.DOMAIN, Common.CHAT_USERNAME_1, Common.PASSWORD_1, "1");
+//                    backgroundXMPP.connect();
 //                    }
-                    backgroundXMPP.connect();
-
                 }
 
                 System.out.println("Background_OnCreate --> Background Service Started");
@@ -105,16 +100,13 @@ public class BackgroundXMPPConnection extends IntentService {
     public void onDestroy() {
         super.onDestroy();
 
+        stopSelf();
+
         try {
             System.out.println("BackgroundService_OnDestroy --> Destroy");
         } catch (Exception e) {
             System.out.println("BackgroundService_OnDestroyException --> " + e.getMessage());
 
         }
-    }
-
-    @Override
-    protected void onHandleIntent(Intent intent) {
-
     }
 }

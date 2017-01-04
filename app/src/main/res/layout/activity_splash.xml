@@ -20,27 +20,56 @@
 
     </android.support.v7.widget.Toolbar>
 
-    <Button
-        android:id="@+id/btnUser1"
-        android:layout_width="200dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:layout_gravity="center"
-        android:background="@color/colorPrimary"
-        android:text="User 1 "
-        android:textAllCaps="false"
-        android:textColor="@android:color/white" />
+        android:gravity="center"
+        android:orientation="vertical">
 
-    <Button
-        android:id="@+id/btnUser2"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/btnUser1"
-        android:layout_centerInParent="true"
-        android:layout_gravity="center"
-        android:layout_marginTop="15dp"
-        android:background="@color/colorPrimary"
-        android:text="User 2 "
-        android:textAllCaps="false"
-        android:textColor="@android:color/white" />
+        <EditText
+            android:id="@+id/edtUserName"
+            android:layout_width="320dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/edt_background"
+            android:hint="@string/user_name"
+            android:inputType="text"
+            android:padding="10dp"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/edtPassword"
+            android:layout_width="320dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/edt_background"
+            android:hint="@string/password"
+            android:inputType="textPassword"
+            android:padding="10dp"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/edtOtherUser"
+            android:layout_width="320dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/edt_background"
+            android:hint="@string/recipient_user_name"
+            android:inputType="text"
+            android:padding="10dp"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="200dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="15dp"
+            android:background="@color/colorPrimary"
+            android:text="@string/login"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white" />
+
+    </LinearLayout>
 </RelativeLayout>

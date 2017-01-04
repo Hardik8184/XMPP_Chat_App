@@ -177,7 +177,7 @@ public class AppDataBase {
     }
 
     //-------------------------------  TODO : Unread Messages Counts  ----------------------------//
-    public String getNewUnreadMessagesCounts() {
+    public String getNewUnreadMessagesCounts(String user_name) {
 
         Cursor unreadMessagesCountsCursor = null;
 
@@ -187,7 +187,7 @@ public class AppDataBase {
          * is_msg_read='false' AND sender!='raj'. */
         String unreadMessagesCountsQuery = "select COUNT(*) AS numberOfCount from " +
                 DATABASE_TABLE_NAME + " where " + KEY_IS_MSG_READ + "='false' AND " + KEY_SENDER +
-                "!='" + Common.CHAT_USERNAME_1 + "'";
+                "!='" + user_name + "'";
 
         try {
 
@@ -259,7 +259,7 @@ public class AppDataBase {
     }
 
     //---------------------  TODO : Show Notification For New Unread Messages  -------------------//
-    public ArrayList<String> getNewUnreadMessagesForNotification() {
+    public ArrayList<String> getNewUnreadMessagesForNotification(String user_name) {
 
         Cursor unreadMessagesNotificationCursor = null;
 
@@ -267,7 +267,7 @@ public class AppDataBase {
          * is_msg_read='false' AND sender!='raj'. */
         String unreadMessagesNotificationQuery = "select " + KEY_SENDER + "," + KEY_MESSAGE +
                 " from " + DATABASE_TABLE_NAME + " where " + KEY_IS_MSG_READ + "='false' AND " +
-                KEY_SENDER + "!='" + Common.CHAT_USERNAME_1 + "'";
+                KEY_SENDER + "!='" + user_name + "'";
 
         ArrayList<String> unreadMessagesForNotification = null;
 

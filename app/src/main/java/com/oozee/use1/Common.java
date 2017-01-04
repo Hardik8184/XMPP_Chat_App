@@ -25,16 +25,16 @@ public class Common {
 
     public static final String DOMAIN = "192.168.1.141";
 
-    public static final String CHAT_USERNAME_1 = "test1";
-    public static final String CHAT_USERNAME_2 = "test2";
+    //    public static final String CHAT_USERNAME_1 = "test1";
+    //    public static final String CHAT_USERNAME_2 = "test2";
 
-    public static final String PASSWORD_1 = "123";
-    public static final String PASSWORD_2 = "123";
+    //    public static final String PASSWORD_1 = "123";
+    //    public static final String PASSWORD_2 = "123";
 
     //    public static final String CHAT_ROOM = "mytesting@conference.peacock";
-    public static final String CHAT_ROOM = "test1@127.0.0.1";
-    public static final String CHAT_USER_1_JID = "test1@127.0.0.1";
-    public static final String CHAT_USER_2_JID = "test2@127.0.0.1";
+    public static final String CHAT_ROOM = "test1@192.168.1.141";
+    //    public static final String CHAT_USER_1_JID = "test1@192.168.1.141";
+    //    public static final String CHAT_USER_2_JID = "test2@192.168.1.141";
 
     //public static final String NICK_NAME = "bhavesh";
 
@@ -54,11 +54,11 @@ public class Common {
 
     //public static final String unreadMessagesCount = "unread_meassages_count";
 
-    public static int TYPE_WIFI = 1;
+    private static int TYPE_WIFI = 1;
 
-    public static int TYPE_MOBILE = 2;
+    private static int TYPE_MOBILE = 2;
 
-    public static int TYPE_NOT_CONNECTED = 0;
+    private static int TYPE_NOT_CONNECTED = 0;
 
     private static DateFormat dateFormat = new SimpleDateFormat("d MMM yyyy", Locale.getDefault());
     private static DateFormat timeFormat = new SimpleDateFormat("K:mma", Locale.getDefault());
@@ -126,7 +126,7 @@ public class Common {
         return status;
     }
 
-    public static boolean isMyServiceRunning(Context context, Class<?> serviceClass) {
+    static boolean isMyServiceRunning(Context context, Class<?> serviceClass) {
 
         ActivityManager manager = (ActivityManager) context.
                 getSystemService(Context.ACTIVITY_SERVICE);

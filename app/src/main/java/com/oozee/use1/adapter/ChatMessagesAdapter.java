@@ -1,6 +1,7 @@
 package com.oozee.use1.adapter;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
@@ -27,12 +28,13 @@ public class ChatMessagesAdapter extends RecyclerView.Adapter<ChatMessagesAdapte
         CustomViewHolder> {
 
     private Context context;
-
+    private SharedPreferences preferences;
     private ArrayList<ChatMessage> chatMessageList;
 
-    public ChatMessagesAdapter(Context context, ArrayList<ChatMessage> chatMessagesList) {
+    public ChatMessagesAdapter(Context context, ArrayList<ChatMessage> chatMessagesList, SharedPreferences preferences) {
         this.context = context;
         this.chatMessageList = chatMessagesList;
+        this.preferences = preferences;
     }
 
 //    public void add(ChatMessage object) {
@@ -60,7 +62,7 @@ public class ChatMessagesAdapter extends RecyclerView.Adapter<ChatMessagesAdapte
                 new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        if (sender.equals(Common.CHAT_USERNAME_1)) {
+        if (sender.equals(preferences.getString("user_name", "admin"))) {
 
             params.gravity = Gravity.RIGHT;
 
@@ -71,7 +73,7 @@ public class ChatMessagesAdapter extends RecyclerView.Adapter<ChatMessagesAdapte
         }
 
         holder.ll_chatLayoutInside.
-                setBackgroundResource(sender.equals(Common.CHAT_USERNAME_1) ? R.drawable.sender :
+                setBackgroundResource(sender.equals(preferences.getString("user_name", "admin")) ? R.drawable.sender :
                         R.drawable.reciever);
 
         holder.tv_message.setLayoutParams(params);
@@ -82,7 +84,7 @@ public class ChatMessagesAdapter extends RecyclerView.Adapter<ChatMessagesAdapte
         holder.tv_dateTime.setLayoutParams(params);
         holder.tv_dateTime.setTextColor(Color.rgb(171, 176, 175));
 
-        if (sender.equals(Common.CHAT_USERNAME_1)) {
+        if (sender.equals(preferences.getString("user_name", "admin"))) {
 
             //params.rightMargin = 10;
 

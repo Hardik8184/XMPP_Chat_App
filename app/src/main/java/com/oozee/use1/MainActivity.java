@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.oozee.use1.dataBase.AppDataBase;
 import com.oozee.use1.fragment.ChatFragement;
 import com.oozee.use1.services.BackgroundXMPPConnection;
+import com.oozee.use1.xmpp.BackgroundXMPP;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -69,6 +70,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 tv_badge.setText("0");
                 tv_badge.setVisibility(GONE);
 
+//                Intent intent = new Intent(activity, ChatFragement.class);
+//                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+//                startActivity(intent);
+//                finish(); // call this to finish the current activity
+
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                 ChatFragement newFragment = ChatFragement.newInstance();
                 newFragment.show(ft, "");
@@ -85,6 +91,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        stopService(new Intent(activity, BackgroundXMPPConnection.class));
+        BackgroundXMPP.disconnect();
     }
 
     @Override
@@ -95,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if (preferences.getString(Common.isFragmentOpen, "").equals("false")) {
 
-            String badges = dbHelper.getNewUnreadMessagesCounts();
+            String badges = dbHelper.getNewUnreadMessagesCounts(preferences.getString("user_name", "admin"));
             if (badges != null && !badges.equals("") && !badges.equals("0")) {
 
                 tv_badge.setText(badges);

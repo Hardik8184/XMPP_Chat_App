@@ -6,13 +6,48 @@
     android:background="#e1e1e1"
     android:orientation="vertical">
 
+    <!--<android.support.v7.widget.Toolbar-->
+    <!--android:id="@+id/mainToolbar"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="56dp"-->
+    <!--android:background="@color/colorPrimary"-->
+    <!--android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">-->
+
+    <!--<ImageView-->
+    <!--android:id="@+id/imgBack"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:contentDescription="@string/app_name"-->
+    <!--android:src="@drawable/ic_arrow_back_svg" />-->
+
+    <!--<TextView-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_weight="1"-->
+    <!--android:paddingLeft="@dimen/activity_horizontal_margin"-->
+    <!--android:paddingStart="@dimen/activity_horizontal_margin"-->
+    <!--android:text="@string/app_name"-->
+    <!--android:textSize="18sp" />-->
+
+    <!--</android.support.v7.widget.Toolbar>-->
+
+    <TextView
+        android:id="@+id/presenceStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="10dp"
+        android:textSize="14sp" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_chatList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/form"
-        android:layout_margin="4dp"
+        android:layout_below="@+id/presenceStatus"
+        android:layout_marginBottom="4dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
         android:scrollbars="none" />
 
     <LinearLayout

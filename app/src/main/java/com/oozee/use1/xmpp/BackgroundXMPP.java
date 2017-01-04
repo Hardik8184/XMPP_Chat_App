@@ -1,5 +1,6 @@
 package com.oozee.use1.xmpp;
 
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -12,12 +13,11 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.oozee.use1.Common;
@@ -25,15 +25,10 @@ import com.oozee.use1.MainActivity;
 import com.oozee.use1.R;
 import com.oozee.use1.bean.ChatMessage;
 import com.oozee.use1.dataBase.AppDataBase;
-import com.oozee.use1.fragment.ChatFragement;
 
 import org.jivesoftware.smack.ConnectionConfiguration;
-import org.jivesoftware.smack.ConnectionCreationListener;
 import org.jivesoftware.smack.ConnectionListener;
-import org.jivesoftware.smack.ExceptionCallback;
-import org.jivesoftware.smack.PacketCollector;
 import org.jivesoftware.smack.ReconnectionManager;
-import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.XMPPConnection;
@@ -41,17 +36,11 @@ import org.jivesoftware.smack.chat.Chat;
 import org.jivesoftware.smack.chat.ChatManager;
 import org.jivesoftware.smack.chat.ChatManagerListener;
 import org.jivesoftware.smack.chat.ChatMessageListener;
-import org.jivesoftware.smack.filter.StanzaFilter;
 import org.jivesoftware.smack.filter.StanzaTypeFilter;
-import org.jivesoftware.smack.iqrequest.IQRequestHandler;
-import org.jivesoftware.smack.packet.ExtensionElement;
-import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.PlainStreamElement;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.roster.Roster;
-import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
@@ -63,9 +52,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collection;
-
-import static org.jivesoftware.smackx.pubsub.AccessModel.roster;
 
 public class BackgroundXMPP {
 
@@ -79,26 +65,25 @@ public class BackgroundXMPP {
 
     private String loginUser, passwordUser;
 
-    private Context context;
+    private Activity activity;
 
     private String serverAddress;
     private static String userSelect = "";
 
     private DiscussionHistory history;
 
-    private SharedPreferences preferences;
+    private static SharedPreferences preferences;
 
-    public BackgroundXMPP(Context context, String serverAdress, String logiUser,
+    public BackgroundXMPP(Activity activity, String serverAdress, String logiUser,
                           String passwordser, String userSelect) {
 
         this.serverAddress = serverAdress;
         this.loginUser = logiUser;
         BackgroundXMPP.userSelect = userSelect;
         this.passwordUser = passwordser;
-        this.context = context;
+        this.activity = activity;
 
         init();
-
     }
 
     private static MessageListener mMessageListener;
@@ -116,11 +101,11 @@ public class BackgroundXMPP {
                 Message message;
 
 //                if (userSelect.equals("1")) {
-                chat = chatManager.createChat(Common.CHAT_USER_2_JID, mMessageListener);
-                message = new Message(Common.CHAT_USERNAME_2);
+//                    chat = chatManager.createChat(Common.CHAT_USER_2_JID, mMessageListener);
+//                    message = new Message(Common.CHAT_USERNAME_2);
 //                } else {
-//                    chat = chatManager.createChat(Common.CHAT_USER_1_JID, mMessageListener);
-//                    message = new Message(Common.CHAT_USERNAME_1);
+                chat = chatManager.createChat(preferences.getString("other_user_jid", "admin@192.168.1.141"), mMessageListener);
+                message = new Message(preferences.getString("other_user_jid", "admin@192.168.1.141"));
 //                }
 
                 message.setBody(body);
@@ -149,16 +134,16 @@ public class BackgroundXMPP {
 
     private void init() {
 
-        preferences = context.getSharedPreferences(Common.sharedPreferences, Context.MODE_PRIVATE);
+        preferences = activity.getSharedPreferences(Common.sharedPreferences, Context.MODE_PRIVATE);
 
-        dbHelper = new AppDataBase(context);
+        dbHelper = new AppDataBase(activity);
 
         gson = new Gson();
-        mMessageListener = new MessageListener(context);
+        mMessageListener = new MessageListener(activity);
 
         mChatManagerListener = new ChatManagerListenerImpl();
 
-        if (Common.getConnectivityStatusString(context)) {
+        if (Common.getConnectivityStatusString(activity)) {
 
             initialiseConnection();
 
@@ -169,61 +154,62 @@ public class BackgroundXMPP {
 
     private void initialiseConnection() {
 
-        XMPPTCPConnectionConfiguration connConfig = XMPPTCPConnectionConfiguration.builder().
-                setHost(serverAddress).setPort(5222).setDebuggerEnabled(true).
-                setSecurityMode(ConnectionConfiguration.SecurityMode.disabled).
-                setUsernameAndPassword(loginUser, passwordUser).setServiceName(serverAddress).
-                build();
+        try {
+            XMPPTCPConnectionConfiguration connConfig = XMPPTCPConnectionConfiguration.builder().
+                    setHost(serverAddress).setPort(5222).setDebuggerEnabled(true).
+                    setSecurityMode(ConnectionConfiguration.SecurityMode.disabled).
+                    setUsernameAndPassword(loginUser, passwordUser).setServiceName(serverAddress).
+                    build();
 
-        XMPPTCPConnection.setUseStreamManagementDefault(true);
-        XMPPTCPConnection.setUseStreamManagementResumptionDefault(true);
+            XMPPTCPConnection.setUseStreamManagementDefault(true);
+            XMPPTCPConnection.setUseStreamManagementResumptionDefault(true);
 
-        connection = new XMPPTCPConnection(connConfig);
-        connection.setUseStreamManagement(true);
-        connection.setUseStreamManagementResumption(true);
+            connection = new XMPPTCPConnection(connConfig);
+            connection.setUseStreamManagement(true);
+            connection.setUseStreamManagementResumption(true);
 
-        XMPPConnectionListener connectionListener = new XMPPConnectionListener();
+            XMPPConnectionListener connectionListener = new XMPPConnectionListener();
 
-        connection.addConnectionListener(connectionListener);
-        //connection.setPacketReplyTimeout(100000);
-        connection.setPacketReplyTimeout(XMPPTCPConnectionConfiguration.DEFAULT_CONNECT_TIMEOUT);
+            connection.addConnectionListener(connectionListener);
+            //connection.setPacketReplyTimeout(100000);
+            connection.setPacketReplyTimeout(XMPPTCPConnectionConfiguration.DEFAULT_CONNECT_TIMEOUT);
 
-        connection.addStanzaAcknowledgedListener(new StanzaListener() {
-            @Override
-            public void processPacket(Stanza packet) throws NotConnectedException {
+            connection.addStanzaAcknowledgedListener(new StanzaListener() {
+                @Override
+                public void processPacket(Stanza packet) throws NotConnectedException {
 
 //                String id = packet.getStanzaId();
 //                if (StringUtils.isNullOrEmpty(id)) {
 //                }
-            }
-        });
+                }
+            });
 
-        /* If connection with xmpp server is clesed due to any assistance then because of following
-           code itself it will try to reconnect to the server. Everytime it will call
+        /* If connection with xmpp server is closed due to any assistance then because of following
+           code itself it will try to reconnect to the server. EveryTime it will call
            reconnectingIn(int arg0) method(See below XMPPConnectionListener class)*/
-        ReconnectionManager reconnectionManager = ReconnectionManager.getInstanceFor(connection);
-        ReconnectionManager.setEnabledPerDefault(true);
-        reconnectionManager.enableAutomaticReconnection();
-        reconnectionManager.setReconnectionPolicy(ReconnectionManager.ReconnectionPolicy.
-                FIXED_DELAY);
+            ReconnectionManager reconnectionManager = ReconnectionManager.getInstanceFor(connection);
+            ReconnectionManager.setEnabledPerDefault(true);
+            reconnectionManager.enableAutomaticReconnection();
+            reconnectionManager.setReconnectionPolicy(ReconnectionManager.ReconnectionPolicy.
+                    FIXED_DELAY);
 
-        connection.addSyncStanzaListener(new StanzaListener() {
+            connection.addSyncStanzaListener(new StanzaListener() {
 
-            @Override
-            public void processPacket(Stanza packet) throws NotConnectedException {
+                @Override
+                public void processPacket(Stanza packet) throws NotConnectedException {
 
-                Message message = (Message) packet;
+                    Message message = (Message) packet;
 
-                System.out.println("stanza_Back --> " + message.getBody());
+                    System.out.println("stanza_Back --> " + message.getBody());
 
-                System.out.println("ChatApp_Messages --> " + message.getBody());
+                    System.out.println("ChatApp_Messages --> " + message.getBody());
 
-                try {
+                    try {
 
-                    JSONObject jsonObject = new JSONObject(message.getBody());
+                        JSONObject jsonObject = new JSONObject(message.getBody());
 
-                    sender = jsonObject.optString("sender");
-                    msg = jsonObject.optString("message");
+                        sender = jsonObject.optString("sender");
+                        msg = jsonObject.optString("message");
 
 //                    ChatMessage chatMessage = new ChatMessage(jsonObject.optString("user_id"), jsonObject.optString("msg_id")
 //                            , jsonObject.optString("sender"), jsonObject.optString("message"), jsonObject.optString("date_time")
@@ -239,132 +225,137 @@ public class BackgroundXMPP {
 //                        }
 //                    });
 //
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
 
-                DelayInformation delay = message.getExtension("delay", "urn:xmpp:delay");
+                    DelayInformation delay = message.getExtension("delay", "urn:xmpp:delay");
 
                 /* msg format : saveSearchIDNNO;@;action;@;msg
                    Note : if (action == "S") then saveSearchIDNNO'll give saveSearchIDNNO otherwise
                    saveSearchIDNNO = "0". */
 
-                String isMsgRead = null;
+                    String isMsgRead = null;
 
-                if (sender.equals(Common.CHAT_USERNAME_1)) {
-
-                    isMsgRead = "true";
-
-                } else {
-
-                    if (preferences.getString(Common.isFragmentOpen, "").equals("true") &&
-                            preferences.getString(Common.isAppInRecent, "").equals("false")) {
+                    if (sender.equals(preferences.getString("user_name", "admin"))) {
 
                         isMsgRead = "true";
-
-                    } else {
-
-                        isMsgRead = "false";
-
-                    }
-                }
-
-                if (delay == null) {
-
-                    delay = message.getExtension("x", "jabber:x:delay");
-
-                }
-
-                long time = 0;
-
-                if (delay == null)
-                    time = System.currentTimeMillis();
-                else
-                    time = Common.getDateInMills(delay.getStamp().toString());
-
-                if (msg != null && !msg.equals("") && msg.length() > 0) {
-
-                    dbHelper.insertMessagesToDB(Common.CHAT_USERNAME_1, "1", sender, msg, String.valueOf(time), isMsgRead);
-
-                    /* (Application Is Completely Closed) Or (Fragement Is Opened And Application Is
-                        In Recent Mode). */
-                    if (preferences.getString(Common.isApplicationOpen, "").equals("false") ||
-                            (preferences.getString(Common.isFragmentOpen, "").equals("true") &&
-                                    preferences.getString(Common.isAppInRecent, "").
-                                            equals("true"))) {
-
-                        //Code For Notification When Application Is Completely Closed.
-                        System.out.println("ChatApp -- BackgroundXMPP -- addSyncStanzaListener --> "
-                                + "App is Closed, " + message.getBody());
-
-                        chatMessagesNotification(dbHelper.getNewUnreadMessagesForNotification());
 
                     } else {
 
                         if (preferences.getString(Common.isFragmentOpen, "").equals("true") &&
                                 preferences.getString(Common.isAppInRecent, "").equals("false")) {
 
-                            Intent broadCastChat = new Intent("update_chat_list");
-                            broadCastChat.putExtra("live_chat_broadcast",
-                                    "live_chat_broadcast_success");
-                            broadCastChat.putExtra("user_id", Common.CHAT_USERNAME_1);
-                            broadCastChat.putExtra("msg_id", "1");
-                            broadCastChat.putExtra("sender", sender);
-                            broadCastChat.putExtra("message", msg);
-                            broadCastChat.putExtra("date_time", String.valueOf(time));
-                            broadCastChat.putExtra("is_msg_read", "true");
-                            LocalBroadcastManager.getInstance(context).sendBroadcast(broadCastChat);
+                            isMsgRead = "true";
 
                         } else {
 
+                            isMsgRead = "false";
+
+                        }
+                    }
+
+                    if (delay == null) {
+
+                        delay = message.getExtension("x", "jabber:x:delay");
+
+                    }
+
+                    long time = 0;
+
+                    if (delay == null)
+                        time = System.currentTimeMillis();
+                    else
+                        time = Common.getDateInMills(delay.getStamp().toString());
+
+                    if (msg != null && !msg.equals("") && msg.length() > 0) {
+
+                        dbHelper.insertMessagesToDB(preferences.getString("user_name", "admin")
+                                , "1", sender, msg, String.valueOf(time), isMsgRead);
+
+                    /* (Application Is Completely Closed) Or (Fragement Is Opened And Application Is
+                        In Recent Mode). */
+                        if (preferences.getString(Common.isApplicationOpen, "").equals("false") ||
+                                (preferences.getString(Common.isFragmentOpen, "").equals("true") &&
+                                        preferences.getString(Common.isAppInRecent, "").
+                                                equals("true"))) {
+
+                            //Code For Notification When Application Is Completely Closed.
+                            System.out.println("ChatApp -- BackgroundXMPP -- addSyncStanzaListener --> "
+                                    + "App is Closed, " + message.getBody());
+
+                            chatMessagesNotification(dbHelper.getNewUnreadMessagesForNotification(
+                                    preferences.getString("user_name", "admin")));
+
+                        } else {
+
+                            if (preferences.getString(Common.isFragmentOpen, "").equals("true") &&
+                                    preferences.getString(Common.isAppInRecent, "").equals("false")) {
+
+                                Intent broadCastChat = new Intent("update_chat_list");
+                                broadCastChat.putExtra("live_chat_broadcast",
+                                        "live_chat_broadcast_success");
+                                broadCastChat.putExtra("user_id", preferences.getString("user_name", "admin"));
+                                broadCastChat.putExtra("msg_id", "1");
+                                broadCastChat.putExtra("sender", sender);
+                                broadCastChat.putExtra("message", msg);
+                                broadCastChat.putExtra("date_time", String.valueOf(time));
+                                broadCastChat.putExtra("is_msg_read", "true");
+                                LocalBroadcastManager.getInstance(activity).sendBroadcast(broadCastChat);
+
+                            } else {
+
                             /* When ChatFrafement Is Open But Application Is In Recent Mode Then
                                Badges Should Be Updated As Well As Notification Also Arrise. */
-                            if (isMsgRead.equals("false")) {
+                                if (isMsgRead.equals("false")) {
 
-                                ArrayList<String> notificationMessages = dbHelper.
-                                        getNewUnreadMessagesForNotification();
+                                    ArrayList<String> notificationMessages = dbHelper.
+                                            getNewUnreadMessagesForNotification(preferences.getString("user_name", "admin"));
 
-                                System.out.println("ChatApp -- BackgroundXMPP -- " +
-                                        "addSyncStanzaListener --> " + /*preferences.
+                                    System.out.println("ChatApp -- BackgroundXMPP -- " +
+                                            "addSyncStanzaListener --> " + /*preferences.
                                         getString(Common.unreadMessagesCount, "")*/
-                                        notificationMessages.size());
+                                            notificationMessages.size());
 
-                                Intent updateBadges = new Intent("update_badges_broadcast");
-                                updateBadges.putExtra("udate_badge", "new_messages_recieved");
-                                updateBadges.putExtra("badge_count",
-                                        String.valueOf(notificationMessages.size()));
+                                    Intent updateBadges = new Intent("update_badges_broadcast");
+                                    updateBadges.putExtra("udate_badge", "new_messages_recieved");
+                                    updateBadges.putExtra("badge_count",
+                                            String.valueOf(notificationMessages.size()));
 
                                 /*preferences.edit().putString(Common.unreadMessagesCount,
                                         String.valueOf(unreadMessageCount)).commit();*/
 
-                                LocalBroadcastManager.getInstance(context).
-                                        sendBroadcast(updateBadges);
+                                    LocalBroadcastManager.getInstance(activity).
+                                            sendBroadcast(updateBadges);
 
-                                //Code For Notification
-                                if (preferences.getString(Common.isAppInRecent, "").
-                                        equals("true")) {
+                                    //Code For Notification
+                                    if (preferences.getString(Common.isAppInRecent, "").
+                                            equals("true")) {
 
-                                    System.out.println("ChatApp -- BackgroundXMPP -- " +
-                                            "addSyncStanzaListener -->  App In Recent, Fragment " +
-                                            "Closed, " + message.getBody());
+                                        System.out.println("ChatApp -- BackgroundXMPP -- " +
+                                                "addSyncStanzaListener -->  App In Recent, Fragment " +
+                                                "Closed, " + message.getBody());
 
-                                    chatMessagesNotification(notificationMessages);
+                                        chatMessagesNotification(notificationMessages);
 
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    if (preferences.getString(Common.gotHistory, "").equals("false")) {
+                        if (preferences.getString(Common.gotHistory, "").equals("false")) {
 
-                        preferences.edit().putString(Common.gotHistory, "true").commit();
+                            preferences.edit().putString(Common.gotHistory, "true").commit();
 
-                        //sendMsgtoGroup("Hiiiii ... ");
+                            //sendMsgtoGroup("Hiiiii ... ");
 
+                        }
                     }
                 }
-            }
-        }, new StanzaTypeFilter(Message.class));
+            }, new StanzaTypeFilter(Message.class));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void connect() {
@@ -374,7 +365,7 @@ public class BackgroundXMPP {
             @Override
             protected synchronized Boolean doInBackground(Void... arg0) {
 
-                if (Common.getConnectivityStatusString(context)) {
+                if (Common.getConnectivityStatusString(activity)) {
 
                     if (connection.isConnected())
                         return false;
@@ -430,19 +421,66 @@ public class BackgroundXMPP {
         try {
 
             Presence presence = new Presence(Presence.Type.available);
+            presence.setMode(Presence.Mode.available);
 
             connection.sendStanza(presence);
             connection.login(loginUser, passwordUser);
 
             DelayExtensionProvider.install();
 
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(activity, "Logged In Successfully", Toast.LENGTH_SHORT).show();
+                }
+            });
+
             System.out.println("LoginSuccess --> Logged In Successfully");
 
-        } catch (Exception e) {
+        } catch (final Exception e) {
+
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(activity, "LoginException --> " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
 
             System.out.println("LoginException --> " + e.getMessage());
 
         }
+    }
+
+    public static int getPresence(String user) {
+        try {
+
+            Roster roster = Roster.getInstanceFor(connection);
+//            Roster roster = xmppConnection.getRoster();
+            Presence availability = roster.getPresence(user);
+            Presence.Mode userMode = availability.getMode();
+
+            return retrieveState_mode(availability.getMode(), availability.isAvailable());
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    private static int retrieveState_mode(Presence.Mode userMode, boolean isOnline) {
+        int userState = 0;
+        /** 0 for offline, 1 for online, 2 for away,3 for busy*/
+        if (userMode == Presence.Mode.dnd) {
+            userState = 3;
+        } else if (userMode == Presence.Mode.away || userMode == Presence.Mode.xa) {
+            userState = 2;
+        } else if (isOnline) {
+            userState = 1;
+        }
+
+        System.out.println("XMPP CHAT APP ----> Status of User2 --> " + userState);
+
+        return userState;
     }
 
 //    private void joinGroup() {
@@ -540,20 +578,20 @@ public class BackgroundXMPP {
 
         boolean lollipop = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP);
 
-        PendingIntent resultPendingIntent = PendingIntent.getActivity(context, 0, new Intent(),
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(activity, 0, new Intent(),
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
-        NotificationManager mNotificationManager = (NotificationManager) context.
+        NotificationManager mNotificationManager = (NotificationManager) activity.
                 getSystemService(Context.NOTIFICATION_SERVICE);
 
         NotificationCompat.Builder mNotifyBuilder;
 
         if (lollipop) {
 
-            mNotifyBuilder = new NotificationCompat.Builder(context).setContentTitle("ChatApp").
+            mNotifyBuilder = new NotificationCompat.Builder(activity).setContentTitle("ChatApp").
                     setStyle(new NotificationCompat.BigTextStyle().bigText(msg)).
                     setContentText(msg).setColor(Color.TRANSPARENT).setLargeIcon(BitmapFactory.
-                    decodeResource(context.getResources(), R.mipmap.ic_launcher)).
+                    decodeResource(activity.getResources(), R.mipmap.ic_launcher)).
                     setPriority(Notification.PRIORITY_HIGH).setSmallIcon(R.mipmap.ic_launcher).
                     setWhen(when).setAutoCancel(true);
 
@@ -562,7 +600,7 @@ public class BackgroundXMPP {
 
         } else {
 
-            mNotifyBuilder = new NotificationCompat.Builder(context).
+            mNotifyBuilder = new NotificationCompat.Builder(activity).
                     setStyle(new NotificationCompat.BigTextStyle().bigText(msg)).
                     setContentTitle("ChatApp").setContentText(msg).
                     setSmallIcon(R.mipmap.ic_launcher).setWhen(when).setAutoCancel(true);
@@ -589,8 +627,8 @@ public class BackgroundXMPP {
 
         long when = System.currentTimeMillis();
 
-        PendingIntent chatMessagesPendingIntent = PendingIntent.getActivity(context, 0,
-                new Intent(context, MainActivity.class), PendingIntent.FLAG_ONE_SHOT);
+        PendingIntent chatMessagesPendingIntent = PendingIntent.getActivity(activity, 0,
+                new Intent(activity, MainActivity.class), PendingIntent.FLAG_ONE_SHOT);
 
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
         inboxStyle.setBigContentTitle(Common.CHAT_ROOM);
@@ -626,10 +664,10 @@ public class BackgroundXMPP {
 
             if (msgsList.size() == 1) {
 
-                mNotifyBuilder = new NotificationCompat.Builder(context).
+                mNotifyBuilder = new NotificationCompat.Builder(activity).
                         setContentTitle(Common.CHAT_ROOM).setStyle(inboxStyle).
                         setDefaults(Notification.DEFAULT_ALL).setColor(Color.TRANSPARENT).
-                        setLargeIcon(BitmapFactory.decodeResource(context.getResources(),
+                        setLargeIcon(BitmapFactory.decodeResource(activity.getResources(),
                                 R.mipmap.ic_launcher)).
                         setContentText(msgsList.get(0)).setGroupSummary(true).
                         setGroup("chatApp").setSmallIcon(R.mipmap.ic_launcher).
@@ -638,10 +676,10 @@ public class BackgroundXMPP {
 
             } else {
 
-                mNotifyBuilder = new NotificationCompat.Builder(context).
+                mNotifyBuilder = new NotificationCompat.Builder(activity).
                         setContentTitle(Common.CHAT_ROOM).setStyle(inboxStyle).
                         setDefaults(Notification.DEFAULT_ALL).setColor(Color.TRANSPARENT).
-                        setLargeIcon(BitmapFactory.decodeResource(context.getResources(),
+                        setLargeIcon(BitmapFactory.decodeResource(activity.getResources(),
                                 R.mipmap.ic_launcher)).setContentText("" + msgsList.size() +
                         " New Messages").setSmallIcon(R.mipmap.ic_launcher).
                         setCategory(NotificationCompat.CATEGORY_MESSAGE).setGroupSummary(true).
@@ -651,11 +689,11 @@ public class BackgroundXMPP {
             }
         } else {
 
-            mNotifyBuilder = new NotificationCompat.Builder(context).
+            mNotifyBuilder = new NotificationCompat.Builder(activity).
                     setContentTitle(Common.CHAT_ROOM).setStyle(inboxStyle).
                     setDefaults(Notification.DEFAULT_ALL).setColor(Color.TRANSPARENT).
                     setContentText("" + msgsList.size() + " New Message").
-                    setLargeIcon(BitmapFactory.decodeResource(context.getResources(),
+                    setLargeIcon(BitmapFactory.decodeResource(activity.getResources(),
                             R.mipmap.ic_launcher)).setGroupSummary(true).setGroup("chatApp").
                     setCategory(NotificationCompat.CATEGORY_MESSAGE).
                     setSmallIcon(R.mipmap.ic_launcher).setWhen(when).setAutoCancel(true);
@@ -672,7 +710,7 @@ public class BackgroundXMPP {
         mNotifyBuilder.setLights(Notification.DEFAULT_LIGHTS, 1000, 1000);
 
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.
-                from(context);
+                from(activity);
 
         //to post your notification to the notification bar
         notificationManagerCompat.notify(0, mNotifyBuilder.build());
@@ -686,7 +724,8 @@ public class BackgroundXMPP {
 
             Log.e("working", "admin " + createdLocally);
 
-            chat.addMessageListener(mMessageListener);
+            if (createdLocally)
+                chat.addMessageListener(mMessageListener);
 
         }
     }
@@ -698,10 +737,9 @@ public class BackgroundXMPP {
 
             System.out.println("XMPP_Connection --> Connected");
 
-            if (Common.getConnectivityStatusString(context)) {
+            if (Common.getConnectivityStatusString(activity)) {
 
                 if (!connection.isAuthenticated()) {
-
                     login();
                 }
             }
@@ -804,7 +842,7 @@ public class BackgroundXMPP {
 }
 //    private class MessageListener implements ChatMessageListener {
 //
-//        MessageListener(Context context) {
+//        MessageListener(Context activity) {
 //        }
 //
 //        @Override
