@@ -100,7 +100,6 @@ public class SplashActivity extends AppCompatActivity implements View.OnClickLis
                                     public void onDisConnect() {
 
                                         progress.dismiss();
-
                                         Toast.makeText(activity, "Connection not establish.Try again later", Toast.LENGTH_SHORT).show();
                                     }
                                 });
