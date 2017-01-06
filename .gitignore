@@ -3,7 +3,7 @@
 .gradle/
 .idea/libraries/
 .idea/workspace.xml
-MyApplication.iml
+XMPP_Chat_App.iml
 app/app.iml
 app/build/
 build/
