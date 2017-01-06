@@ -86,7 +86,7 @@ public class SplashActivity extends AppCompatActivity implements View.OnClickLis
                             if (Common.getConnectivityStatusString(activity)) {
 
                                 backgroundXMPP = new BackgroundXMPP(activity,
-                                        Common.DOMAIN, strUserName, strPassword, "1", new BackgroundXMPP.ConnectionDone() {
+                                        Common.DOMAIN, strUserName, strPassword, new BackgroundXMPP.ConnectionDone() {
                                     @Override
                                     public void onConnect() {
 
@@ -131,15 +131,5 @@ public class SplashActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     protected void onResume() {
         super.onResume();
-//        if (Common.getConnectivityStatusString(activity)) {
-
-//            if (!Common.isMyServiceRunning(activity, BackgroundXMPPConnection.class)) {
-//
-//                Intent startBackgroundService = new Intent(activity,
-//                        BackgroundXMPPConnection.class);
-//                startService(startBackgroundService);
-//
-//            }
-//        }
     }
 }
