@@ -87,11 +87,7 @@ public class ChatFragment extends DialogFragment implements View.OnClickListener
     };
 
     public static ChatFragment newInstance() {
-
-        ChatFragment ChatFragment = new ChatFragment();
-
-        return ChatFragment;
-
+        return new ChatFragment();
     }
 
     @Nullable
