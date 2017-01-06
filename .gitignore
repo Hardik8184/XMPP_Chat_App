@@ -1,0 +1,10 @@
+# Created by .ignore support plugin (hsz.mobi)
+.gitignore
+.gradle/
+.idea/libraries/
+.idea/workspace.xml
+XMPP_Chat_App.iml
+app/app.iml
+app/build/
+build/
+local.properties
