@@ -39,7 +39,7 @@ import java.util.TimerTask;
  * Created by peacock on 8/10/16.
  */
 
-public class ChatFragement extends DialogFragment implements View.OnClickListener {
+public class ChatFragment extends DialogFragment implements View.OnClickListener {
 
     private Activity activity;
     private ArrayList<ChatMessage> chatMessagesList;
@@ -86,11 +86,11 @@ public class ChatFragement extends DialogFragment implements View.OnClickListene
         }
     };
 
-    public static ChatFragement newInstance() {
+    public static ChatFragment newInstance() {
 
-        ChatFragement chatFragement = new ChatFragement();
+        ChatFragment ChatFragment = new ChatFragment();
 
-        return chatFragement;
+        return ChatFragment;
 
     }
 
