@@ -23,7 +23,7 @@ public class Common {
     //mytesting@conference.peacock   --> alex, raj, ritesh     --> 123
     //testingRoom@conference.peacock --> mayank, bhavesh, ajay --> 123
 
-    public static final String DOMAIN = "192.168.1.141";
+    public static final String DOMAIN = "95.138.180.254";
 
     //    public static final String CHAT_USERNAME_1 = "test1";
     //    public static final String CHAT_USERNAME_2 = "test2";
@@ -32,9 +32,9 @@ public class Common {
     //    public static final String PASSWORD_2 = "123";
 
     //    public static final String CHAT_ROOM = "mytesting@conference.peacock";
-    public static final String CHAT_ROOM = "test1@192.168.1.141";
-    //    public static final String CHAT_USER_1_JID = "test1@192.168.1.141";
-    //    public static final String CHAT_USER_2_JID = "test2@192.168.1.141";
+    public static final String CHAT_ROOM = "test1@95.138.180.254";
+    //    public static final String CHAT_USER_1_JID = "test1@95.138.180.254";
+    //    public static final String CHAT_USER_2_JID = "test2@95.138.180.254";
 
     //public static final String NICK_NAME = "bhavesh";
 

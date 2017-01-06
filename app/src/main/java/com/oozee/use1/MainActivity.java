@@ -13,10 +13,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.oozee.use1.dataBase.AppDataBase;
 import com.oozee.use1.fragment.ChatFragement;
-import com.oozee.use1.services.BackgroundXMPPConnection;
 import com.oozee.use1.xmpp.BackgroundXMPP;
 
 import static android.view.View.GONE;
@@ -67,17 +67,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btn_startChatting:
             case R.id.fl_startChatting:
 
-                tv_badge.setText("0");
-                tv_badge.setVisibility(GONE);
+                if (BackgroundXMPP.connection.isConnected()) {
 
-//                Intent intent = new Intent(activity, ChatFragement.class);
-//                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-//                startActivity(intent);
-//                finish(); // call this to finish the current activity
+                    tv_badge.setText("0");
+                    tv_badge.setVisibility(GONE);
 
-                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                ChatFragement newFragment = ChatFragement.newInstance();
-                newFragment.show(ft, "");
+                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                    ChatFragement newFragment = ChatFragement.newInstance();
+                    newFragment.show(ft, "");
+                } else {
+                    Toast.makeText(activity, "Please wait connection is establish", Toast.LENGTH_SHORT).show();
+                }
 
                 break;
 
@@ -91,7 +91,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        stopService(new Intent(activity, BackgroundXMPPConnection.class));
         BackgroundXMPP.disconnect();
     }
 
@@ -116,16 +115,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
 
-        if (Common.getConnectivityStatusString(activity)) {
-
-            if (!Common.isMyServiceRunning(activity, BackgroundXMPPConnection.class)) {
-
-                Intent startBackgroundService = new Intent(activity,
-                        BackgroundXMPPConnection.class);
-                startService(startBackgroundService);
-
-            }
-        }
+//        if (Common.getConnectivityStatusString(activity)) {
+//
+//            if (!Common.isMyServiceRunning(activity, BackgroundXMPPConnection.class)) {
+//
+//                Intent startBackgroundService = new Intent(activity,
+//                        BackgroundXMPPConnection.class);
+//                startService(startBackgroundService);
+//
+//            }
+//        }
 
         LocalBroadcastManager.getInstance(activity).registerReceiver(updateBadgesReciever,
                 new IntentFilter("update_badges_broadcast"));

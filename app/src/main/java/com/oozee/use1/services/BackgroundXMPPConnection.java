@@ -53,14 +53,11 @@ public class BackgroundXMPPConnection extends Service {
                 connectivityManager = (ConnectivityManager) getSystemService(Context.
                         CONNECTIVITY_SERVICE);
 
-                if (Common.getConnectivityStatusString(BackgroundXMPPConnection.this)) {
-
-//                    if (!Common.isMyServiceRunning(BackgroundXMPPConnection.this, BackgroundXMPPConnection.class)) {
+//                if (Common.getConnectivityStatusString(BackgroundXMPPConnection.this)) {
 //                    backgroundXMPP = new BackgroundXMPP(BackgroundXMPPConnection.this,
 //                            Common.DOMAIN, Common.CHAT_USERNAME_1, Common.PASSWORD_1, "1");
 //                    backgroundXMPP.connect();
-//                    }
-                }
+//                }
 
                 System.out.println("Background_OnCreate --> Background Service Started");
 

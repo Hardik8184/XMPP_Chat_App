@@ -9,7 +9,7 @@ import android.os.Looper;
 import android.widget.Toast;
 
 import com.oozee.use1.Common;
-import com.oozee.use1.services.BackgroundXMPPConnection;
+import com.oozee.use1.MainActivity;
 import com.oozee.use1.xmpp.BackgroundXMPP;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -86,7 +86,23 @@ public class MyReciever extends BroadcastReceiver {
 
                     backgroundXMPP = new BackgroundXMPP(activity,
                             Common.DOMAIN, preferences.getString("user_name", "admin"),
-                            preferences.getString("password", "123"), "1");
+                            preferences.getString("password", "123"), "1", new BackgroundXMPP.ConnectionDone() {
+                        @Override
+                        public void onConnect() {
+
+//                            progress.dismiss();
+//
+//                            startActivity(new Intent(activity, MainActivity.class));
+//                            finish();
+                        }
+
+                        @Override
+                        public void onDisConnect() {
+
+//                            progress.dismiss();
+//                            Toast.makeText(activity, "Connection not establish.Try again later", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                     backgroundXMPP.connect();
                 }
 

@@ -236,7 +236,7 @@ public class ChatFragement extends DialogFragment implements View.OnClickListene
             @Override
             public void run() {
 
-                final int userState = BackgroundXMPP.getPresence(preferences.getString("other_user_jid", "admin@192.168.1.141"));
+                final int userState = BackgroundXMPP.getPresence(preferences.getString("other_user_jid", "admin@95.138.180.254"));
 
 //                System.out.println("XMPP CHAT APP ----> User 1 --> Status of User2");
 
@@ -255,7 +255,7 @@ public class ChatFragement extends DialogFragment implements View.OnClickListene
                     }
                 });
             }
-        }, 1000, 10000);
+        }, 1000, 5000);
     }
 
     public void sendTextMessage() {

@@ -1,6 +1,7 @@
 package com.oozee.use1;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -26,6 +27,7 @@ public class SplashActivity extends AppCompatActivity implements View.OnClickLis
     private static final String TAG = "SplashActivity";
     private SharedPreferences preferences;
     private BackgroundXMPP backgroundXMPP;
+    private ProgressDialog progress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +54,10 @@ public class SplashActivity extends AppCompatActivity implements View.OnClickLis
 
             case R.id.btnLogin:
 
+                progress = new ProgressDialog(this);
+                progress.setMessage("Please wait..");
+                progress.show();
+
                 strUserName = edtUserName.getText().toString();
                 strPassword = edtPassword.getText().toString();
                 strOtherUser = edtOtherUser.getText().toString();
@@ -66,8 +72,8 @@ public class SplashActivity extends AppCompatActivity implements View.OnClickLis
                     preferences.edit().putString("password", strPassword).commit();
                     preferences.edit().putString("other_user", strOtherUser).commit();
 
-                    preferences.edit().putString("user_jid", strUserName + "@192.168.1.141").commit();
-                    preferences.edit().putString("other_user_jid", strOtherUser + "@192.168.1.141").commit();
+                    preferences.edit().putString("user_jid", strUserName + "@95.138.180.254").commit();
+                    preferences.edit().putString("other_user_jid", strOtherUser + "@95.138.180.254").commit();
 
                     new Thread(new Runnable() {
                         @Override
@@ -80,7 +86,24 @@ public class SplashActivity extends AppCompatActivity implements View.OnClickLis
                             if (Common.getConnectivityStatusString(activity)) {
 
                                 backgroundXMPP = new BackgroundXMPP(activity,
-                                        Common.DOMAIN, strUserName, strPassword, "1");
+                                        Common.DOMAIN, strUserName, strPassword, "1", new BackgroundXMPP.ConnectionDone() {
+                                    @Override
+                                    public void onConnect() {
+
+                                        progress.dismiss();
+
+                                        startActivity(new Intent(activity, MainActivity.class));
+                                        finish();
+                                    }
+
+                                    @Override
+                                    public void onDisConnect() {
+
+                                        progress.dismiss();
+
+                                        Toast.makeText(activity, "Connection not establish.Try again later", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                                 backgroundXMPP.connect();
                             }
 
@@ -88,9 +111,6 @@ public class SplashActivity extends AppCompatActivity implements View.OnClickLis
 
                         }
                     }).start();
-
-                    startActivity(new Intent(activity, MainActivity.class));
-                    finish();
                 }
 
                 break;

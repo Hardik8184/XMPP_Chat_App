@@ -13,6 +13,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Environment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -29,6 +30,7 @@ import com.oozee.use1.dataBase.AppDataBase;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.ReconnectionManager;
+import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.XMPPConnection;
@@ -44,6 +46,12 @@ import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
+import org.jivesoftware.smackx.filetransfer.FileTransfer;
+import org.jivesoftware.smackx.filetransfer.FileTransferListener;
+import org.jivesoftware.smackx.filetransfer.FileTransferManager;
+import org.jivesoftware.smackx.filetransfer.FileTransferRequest;
+import org.jivesoftware.smackx.filetransfer.IncomingFileTransfer;
+import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 import org.jivesoftware.smackx.muc.DiscussionHistory;
 import org.jivesoftware.smackx.receipts.DeliveryReceiptManager;
 import org.jivesoftware.smackx.receipts.DeliveryReceiptManager.AutoReceiptMode;
@@ -51,11 +59,19 @@ import org.jivesoftware.smackx.receipts.ReceiptReceivedListener;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class BackgroundXMPP {
 
-    private static XMPPTCPConnection connection;
+    public interface ConnectionDone {
+        void onConnect();
+
+        void onDisConnect();
+    }
+
+    public static ConnectionDone connectionDone;
+    public static XMPPTCPConnection connection;
     private static Gson gson;
 
     //private int unreadMessageCount = 0;
@@ -67,7 +83,7 @@ public class BackgroundXMPP {
 
     private Activity activity;
 
-    private String serverAddress;
+    private static String serverAddress;
     private static String userSelect = "";
 
     private DiscussionHistory history;
@@ -75,13 +91,14 @@ public class BackgroundXMPP {
     private static SharedPreferences preferences;
 
     public BackgroundXMPP(Activity activity, String serverAdress, String logiUser,
-                          String passwordser, String userSelect) {
+                          String passwordser, String userSelect, ConnectionDone connectionDone) {
 
-        this.serverAddress = serverAdress;
+        serverAddress = serverAdress;
         this.loginUser = logiUser;
         BackgroundXMPP.userSelect = userSelect;
         this.passwordUser = passwordser;
         this.activity = activity;
+        BackgroundXMPP.connectionDone = connectionDone;
 
         init();
     }
@@ -104,8 +121,8 @@ public class BackgroundXMPP {
 //                    chat = chatManager.createChat(Common.CHAT_USER_2_JID, mMessageListener);
 //                    message = new Message(Common.CHAT_USERNAME_2);
 //                } else {
-                chat = chatManager.createChat(preferences.getString("other_user_jid", "admin@192.168.1.141"), mMessageListener);
-                message = new Message(preferences.getString("other_user_jid", "admin@192.168.1.141"));
+                chat = chatManager.createChat(preferences.getString("other_user_jid", "admin@95.138.180.254"), mMessageListener);
+                message = new Message(preferences.getString("other_user_jid", "admin@95.138.180.254"));
 //                }
 
                 message.setBody(body);
@@ -120,6 +137,70 @@ public class BackgroundXMPP {
         } catch (Exception e) {
             System.out.println("SendMsgException --> " + e.getMessage());
         }
+    }
+
+    public static void sendFile() {
+
+        FileTransferManager manager = FileTransferManager.getInstanceFor(connection);
+        OutgoingFileTransfer transfer = manager.createOutgoingFileTransfer(preferences.getString("other_user_jid", "admin@95.138.180.254"));
+        File file = new File("");
+        try {
+            transfer.sendFile(file, "test_file");
+        } catch (SmackException e) {
+            e.printStackTrace();
+        }
+        while (!transfer.isDone()) {
+            if (transfer.getStatus().equals(FileTransfer.Status.error)) {
+                System.out.println("ERROR!!! " + transfer.getError());
+            } else if (transfer.getStatus().equals(FileTransfer.Status.cancelled)
+                    || transfer.getStatus().equals(FileTransfer.Status.refused)) {
+                System.out.println("Cancelled!!! " + transfer.getError());
+            }
+            try {
+                Thread.sleep(1000L);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        if (transfer.getStatus().equals(FileTransfer.Status.refused) || transfer.getStatus().equals(FileTransfer.Status.error)
+                || transfer.getStatus().equals(FileTransfer.Status.cancelled)) {
+            System.out.println("refused cancelled error " + transfer.getError());
+        } else {
+            System.out.println("Success");
+        }
+    }
+
+    public static void receiveFile() {
+        FileTransferManager manager = FileTransferManager.getInstanceFor(connection);
+        manager.addFileTransferListener(new FileTransferListener() {
+            public void fileTransferRequest(final FileTransferRequest request) {
+                new Thread() {
+                    @Override
+                    public void run() {
+                        IncomingFileTransfer transfer = request.accept();
+                        File mf = Environment.getExternalStorageDirectory();
+                        File file = new File(mf.getAbsoluteFile() + "/DCIM/Camera/" + transfer.getFileName());
+                        try {
+                            transfer.recieveFile(file);
+                            while (!transfer.isDone()) {
+                                try {
+                                    Thread.sleep(1000L);
+                                } catch (Exception e) {
+                                    Log.e("", e.getMessage());
+                                }
+                                if (transfer.getStatus().equals(FileTransfer.Status.error)) {
+                                    Log.e("ERROR!!! ", transfer.getError() + "");
+                                }
+                                if (transfer.getException() != null)
+                                    transfer.getException().printStackTrace();
+                            }
+                        } catch (Exception e) {
+                            Log.e("", e.getMessage());
+                        }
+                    }
+                }.start();
+            }
+        });
     }
 
     public static void disconnect() {
@@ -224,9 +305,12 @@ public class BackgroundXMPP {
 //
 //                        }
 //                    });
-//
+
                     } catch (JSONException e) {
                         e.printStackTrace();
+
+                        msg = message.getBody();
+                        sender = preferences.getString("other_user", "admin");
                     }
 
                     DelayInformation delay = message.getExtension("delay", "urn:xmpp:delay");
@@ -397,7 +481,10 @@ public class BackgroundXMPP {
 
                     } catch (Exception e) {
 
-                        System.out.println("Notification_Messages --> Connection Losted");
+                        System.out.println("Notification_Messages --> Connection Lost");
+
+                        if (connectionDone != null)
+                            connectionDone.onDisConnect();
 
                         initialiseConnection();
 
@@ -437,11 +524,19 @@ public class BackgroundXMPP {
 
             System.out.println("LoginSuccess --> Logged In Successfully");
 
+            if (connectionDone != null) {
+                connectionDone.onConnect();
+            }
+
         } catch (final Exception e) {
 
             activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+
+                    if (connectionDone != null)
+                        connectionDone.onDisConnect();
+
                     Toast.makeText(activity, "LoginException --> " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
