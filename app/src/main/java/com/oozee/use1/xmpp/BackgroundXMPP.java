@@ -198,9 +198,7 @@ public class BackgroundXMPP {
                     }
 
                     if (delay == null) {
-
                         delay = message.getExtension("x", "jabber:x:delay");
-
                     }
 
                     long time = 0;
@@ -276,7 +274,6 @@ public class BackgroundXMPP {
                                                 "Closed, " + message.getBody());
 
                                         chatMessagesNotification(notificationMessages);
-
                                     }
                                 }
                             }
@@ -285,7 +282,6 @@ public class BackgroundXMPP {
                         if (preferences.getString(Common.gotHistory, "").equals("false")) {
 
                             preferences.edit().putString(Common.gotHistory, "true").commit();
-
                         }
                     }
                 }
