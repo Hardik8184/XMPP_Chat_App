@@ -104,7 +104,6 @@ public class ChatFragment extends DialogFragment implements View.OnClickListener
         preferences = activity.getSharedPreferences(Common.sharedPreferences,
                 Activity.MODE_PRIVATE);
         preferences.edit().putString(Common.isFragmentOpen, "true").commit();
-//        preferences.edit().putString(Common.unreadMessagesCount, "0").commit();
 
         dbHelper = new AppDataBase(activity);
 
