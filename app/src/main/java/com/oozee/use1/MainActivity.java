@@ -16,7 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.oozee.use1.dataBase.AppDataBase;
-import com.oozee.use1.fragment.ChatFragement;
+import com.oozee.use1.fragment.ChatFragment;
 import com.oozee.use1.xmpp.BackgroundXMPP;
 
 import static android.view.View.GONE;
@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     tv_badge.setVisibility(GONE);
 
                     FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                    ChatFragement newFragment = ChatFragement.newInstance();
+                    ChatFragment newFragment = ChatFragment.newInstance();
                     newFragment.show(ft, "");
                 } else {
                     Toast.makeText(activity, "Please wait connection is establish", Toast.LENGTH_SHORT).show();

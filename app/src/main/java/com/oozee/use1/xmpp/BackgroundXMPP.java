@@ -733,12 +733,12 @@ public class BackgroundXMPP {
 
 //        private void processMessage(final ChatMessage chatMessage) {
 //
-//            ChatFragement.chatMessagesAdapter.add(chatMessage);
+//            ChatFragment.chatMessagesAdapter.add(chatMessage);
 //            new Handler(Looper.getMainLooper()).post(new Runnable() {
 //
 //                @Override
 //                public void run() {
-//                    ChatFragement.chatMessagesAdapter.notifyDataSetChanged();
+//                    ChatFragment.chatMessagesAdapter.notifyDataSetChanged();
 //
 //                }
 //            });
