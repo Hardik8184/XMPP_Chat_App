@@ -119,8 +119,6 @@ public class SplashActivity extends AppCompatActivity implements View.OnClickLis
 
                 break;
         }
-
-
     }
 
     @Override

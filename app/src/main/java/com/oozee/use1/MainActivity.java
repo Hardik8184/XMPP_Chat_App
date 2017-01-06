@@ -26,8 +26,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private Activity activity;
     private SharedPreferences preferences;
-    private static final String TAG = "MainActivity";
-    private boolean mBounded;
     private AppDataBase dbHelper;
     private TextView tv_badge;
 
@@ -115,17 +113,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
 
-//        if (Common.getConnectivityStatusString(activity)) {
-//
-//            if (!Common.isMyServiceRunning(activity, BackgroundXMPPConnection.class)) {
-//
-//                Intent startBackgroundService = new Intent(activity,
-//                        BackgroundXMPPConnection.class);
-//                startService(startBackgroundService);
-//
-//            }
-//        }
-
         LocalBroadcastManager.getInstance(activity).registerReceiver(updateBadgesReciever,
                 new IntentFilter("update_badges_broadcast"));
     }
@@ -138,8 +125,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             String key = intent.getStringExtra("udate_badge");
 
             if (key.equals("new_messages_recieved")) {
-
-                //String unreadMessageCount = preferences.getString(Common.unreadMessagesCount, "");
 
                 String unreadMessageCount = intent.getStringExtra("badge_count");
 
