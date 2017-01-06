@@ -150,7 +150,6 @@ public class ChatFragment extends DialogFragment implements View.OnClickListener
         presenceStatus();
 
         return chat_layout;
-
     }
 
     @Override
@@ -158,22 +157,16 @@ public class ChatFragment extends DialogFragment implements View.OnClickListener
         super.onStart();
 
         if (getDialog() == null) {
-
             return;
-
         }
-
         getDialog().getWindow().setWindowAnimations(R.style.ChatLayoutAnimation);
-
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
-
         setStyle(DialogFragment.STYLE_NO_TITLE, R.style.DialogTheme);
-
     }
 
     private void setRecyclerView() {
