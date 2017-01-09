@@ -22,7 +22,7 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.oozee.xmppchat.R;
 import com.oozee.xmppchat.bean.ChatMessage;
-import com.oozee.xmppchat.dataBase.AppDataBase;
+import com.oozee.xmppchat.database.AppDataBase;
 import com.oozee.xmppchat.ui.MainActivity;
 import com.oozee.xmppchat.utils.Common;
 

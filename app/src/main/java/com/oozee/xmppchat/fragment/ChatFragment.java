@@ -29,7 +29,7 @@ import android.widget.Toast;
 import com.oozee.xmppchat.R;
 import com.oozee.xmppchat.adapter.ChatMessagesAdapter;
 import com.oozee.xmppchat.bean.ChatMessage;
-import com.oozee.xmppchat.dataBase.AppDataBase;
+import com.oozee.xmppchat.database.AppDataBase;
 import com.oozee.xmppchat.imgcrop.CropImage;
 import com.oozee.xmppchat.imgcrop.CropImageView;
 import com.oozee.xmppchat.utils.Common;

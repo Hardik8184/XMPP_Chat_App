@@ -24,7 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.oozee.xmppchat.R;
-import com.oozee.xmppchat.dataBase.AppDataBase;
+import com.oozee.xmppchat.database.AppDataBase;
 import com.oozee.xmppchat.fragment.ChatFragment;
 import com.oozee.xmppchat.fragment.HomeFragment;
 import com.oozee.xmppchat.imgcrop.CropImage;
