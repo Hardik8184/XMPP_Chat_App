@@ -77,6 +77,7 @@ public class BackgroundXMPP {
     private String serverAddress;
     private DiscussionHistory history;
     private String sender, msg;
+
     public BackgroundXMPP(Activity activity, String serverAdress, String logiUser,
                           String passwordser, ConnectionDone connectionDone) {
 
