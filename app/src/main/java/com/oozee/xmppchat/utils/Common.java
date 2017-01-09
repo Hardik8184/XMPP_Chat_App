@@ -26,8 +26,8 @@ public class Common {
     public static final String DOMAIN = "95.138.180.254";
     public static final String PORT = "9090";
 
-    public static final String USERNAME = "admin";
-    public static final String PASSWORD = "info@1234";
+    public static final String USERNAME = "";
+    public static final String PASSWORD = "";
     //    public static final String CHAT_USERNAME_2 = "test2";
 
     //    public static final String PASSWORD_2 = "123";
