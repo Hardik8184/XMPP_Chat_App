@@ -12,4 +12,24 @@
     <string name="password">Password</string>
     <string name="login">Login</string>
     <string name="recipient_user_name">Recipient User Name</string>
+
+    <string name="crop_image_menu_rotate_left">Rotate counter clockwise</string>
+    <string name="crop_image_menu_rotate_right">Rotate</string>
+    <string name="crop_image_menu_crop">Crop</string>
+    <string name="pick_image_intent_chooser_title">Select source</string>
+    <string name="email_address">Email Address</string>
+    <string name="name">Name</string>
+    <string name="register">Register</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="register_user">Register User</string>
+    <string name="no_account_sign_up_here">No account? Sign up here</string>
+    <string name="users">Users</string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+
+    <string name="hint_groups">Groups</string>
+    <string name="hint_jid">Jid</string>
+    <string name="hint_name">Name</string>
+    <string name="hint_nickname">Nickname</string>
+    <string name="title_activity_add_user_to_roster">Add User to Roster</string>
 </resources>

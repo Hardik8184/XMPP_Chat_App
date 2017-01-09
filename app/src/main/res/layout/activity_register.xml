@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/main_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@color/colorPrimary"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center|start"
+            android:paddingEnd="0dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="0dp"
+            android:paddingStart="8dp"
+            android:text="@string/register_user"
+            android:textSize="18sp" />
+
+    </android.support.v7.widget.Toolbar>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/edtUserName"
+            android:layout_width="320dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/edt_background"
+            android:hint="@string/user_name"
+            android:inputType="text"
+            android:padding="10dp"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/edtName"
+            android:layout_width="320dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/edt_background"
+            android:hint="@string/name"
+            android:inputType="text"
+            android:padding="10dp"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/edtEmail"
+            android:layout_width="320dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/edt_background"
+            android:hint="@string/email_address"
+            android:inputType="textEmailAddress"
+            android:padding="10dp"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/edtPassword"
+            android:layout_width="320dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/edt_background"
+            android:hint="@string/password"
+            android:inputType="textPassword"
+            android:padding="10dp"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/edtCPassword"
+            android:layout_width="320dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/edt_background"
+            android:hint="@string/confirm_password"
+            android:inputType="textPassword"
+            android:padding="10dp"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/btnRegister"
+            android:layout_width="200dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="15dp"
+            android:background="@color/colorPrimary"
+            android:text="@string/register"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white" />
+
+    </LinearLayout>
+</RelativeLayout>

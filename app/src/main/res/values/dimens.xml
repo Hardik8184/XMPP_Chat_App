@@ -13,4 +13,14 @@
     <dimen name="font_20">20sp</dimen>
     <dimen name="font_22">22sp</dimen>
 
+    <dimen name="margin_large">32.0dip</dimen>
+    <dimen name="margin_medium">16.0dip</dimen>
+    <dimen name="margin_small">8.0dip</dimen>
+    <dimen name="margin_tiny">8.0dip</dimen>
+    <dimen name="margin_xlarge">64.0dip</dimen>
+    <dimen name="padding_large">32.0dip</dimen>
+    <dimen name="padding_medium">16.0dip</dimen>
+    <dimen name="padding_small">8.0dip</dimen>
+    <dimen name="padding_tiny">8.0dip</dimen>
+    <dimen name="padding_xlarge">64.0dip</dimen>
 </resources>
